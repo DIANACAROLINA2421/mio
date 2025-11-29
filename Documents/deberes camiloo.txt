@@ -1,0 +1,149 @@
+$estudiantes = [
+    ["id" => 1, "first_name" => "pepe", "last_name" => "López", "email" => "pepe@example.com", "status" => "ACTIVE"],
+    ["id" => 2, "first_name" => "luis", "last_name" => "Pérez", "email" => null, "status" => "ACTIVE"],
+    ["id" => 3, "first_name" => "marta", "last_name" => "Ruiz", "email" => "marta@example.com", "status" => "INACTIVE"],
+    ["id" => 4, "first_name" => "diego", "last_name" => "Gómez", "email" => "diego@example.com", "status" => "ACTIVE"],
+];
+
+$courses = [
+    ["id" => 101, "title" => "Programación I", "credits" => 6],
+    ["id" => 102, "title" => "Entorno servidor", "credits" => 5],
+    ["id" => 103, "title" => "Entorno web", "credits" => 4]
+];
+
+$matriculados = [
+    ["studentId" => 1, "courseId" => 101],
+    ["studentId" => 1, "courseId" => 102],
+    ["studentId" => 2, "courseId" => 101],
+    ["studentId" => 2, "courseId" => 103],
+    ["studentId" => 3, "courseId" => 101],
+    ["studentId" => 4, "courseId" => 102],
+];
+
+$grados = [
+    ["studentId" => 1, "courseId" => 101, "grade" => 9.2],
+    ["studentId" => 1, "courseId" => 102, "grade" => 7.8],
+    ["studentId" => 2, "courseId" => 101, "grade" => 5.5],
+    ["studentId" => 2, "courseId" => 103, "grade" => 6.3],
+    ["studentId" => 3, "courseId" => 101, "grade" => 4.1],
+    // Diego no tiene nota aún
+];
+//findStudentById(array $estudiantes, int $idUsuario): ?array -> Esta función debe retornar el objeto (array) del estudiante buscado (si existe). Si no existe, retornamos null.
+//creamos una funcion con function que permite la entrada de (array $..., y un numerico $...): y saca un array ?array
+function findStudentById(array $estudiantes, int $idUsuario): ?array{
+    // foreach recorre el array de estudiantes y se le da un valor(variable) de estudiante
+    foreach ($estudiantes as $estudiante){
+        // si en el array de estudiante que es ['id] es igual que $idUsuario
+        if($estudiante['id']==$idUsuario){
+            // detiene la funcion y devuelve el array de estudiante
+            $fullname = fullName($estudiante['first_name'], $estudiante['last_name']);
+            echo $fullname;
+            echo "<br>";
+            return $estudiante;
+        }
+    }
+    // si no existe no devuelve nada
+    return null;
+}
+
+//findCourseById(array $courses, int $idCurso): ?array -> Esta función debe retornar el objeto (array) del curso buscado (si existe). Si no existe, retornamos null.
+function findCourseById(array $courses, int $idCurso): ?array{
+    foreach($courses as $curso){
+        if($curso['id']==$idCurso){
+            return $curso;
+        }
+    }
+    return null;
+}
+
+//fullName(string $first_name, string $last_name): string -> Este array retorna "Nombre Apellidos" como cadena de texto del usuario buscado en findStudentById (si no es null).
+function fullName(string $first_name, string $last_name) :string
+ //$fullname = fullName($estudiante['first_name'], $estudiante['last_name']);
+            //echo $fullname;
+
+{
+ $fullname=$first_name . " " . $last_name;
+    return $fullname;
+}
+ //getStudentGrado(array $grados, int $studentId): void -> Debe imprimir todas las notas del alumno.
+
+//creamos una funcion donde le pasaremos el array de $grados y un int ) : void esta funcion no devuleve nada imprime solo por pantalla
+function getStudentGrado(array $grados, int $studentId) :void
+{
+    echo "estas son tus notas : <br>";
+    // recorremos el array de grados con una variable llamada grad
+    foreach($grados as $grad){
+        // si en los grados que recorremos , coincide con el parametro a pasar
+        if($grad['studentId']==$studentId){
+            // imprime las notas que estan en el array de grad
+            echo $grad['grade'];
+            echo "<br>";
+        }
+    }
+}
+
+/*statusFromGrado(float ...values): string -> Retorna "Suspenso" si media < 5, "Aprobado" si media >=5 y < 7, "Notable" si >= 7 y < 9, y "Sobresaliente si >= 9.
+ *          - Para sacar la media es suma de todas las notas entre asignaturas totales matriculadas por el estudiante.
+ *          - Mostrar en el HTML "suspenso", "aprobado", .... y el nombre del estudiante.*/
+
+function statusFromGrado(array $estudiantes,array $grados,int $studentId):string
+{
+    $sumarnota=0;
+    $contadorMaterias=0;
+    foreach ($grados as $grado){
+        if($grado['studentId']==$studentId){
+            $sumarnota+=$grado['grade'];
+            $contadorMaterias++;
+        }
+    }
+    $notamedia=$sumarnota/$contadorMaterias;
+    if($notamedia<5){
+        return "suspenso: ".$estudiantes[$studentId]['first_name'];
+    }
+    elseif ($notamedia>=5 && $notamedia <7){
+        return "aprobado: ".$estudiantes[$studentId]['first_name'];
+    }
+    elseif ($notamedia>=7 && $notamedia <9){
+        return "notable: ".$estudiantes[$studentId]['first_name'];
+    }
+    else{
+        return "sobresaliente: ".$estudiantes[$studentId]['first_name'];
+    }
+
+}
+?>
+
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ejercicio estudiantes y grado</title>
+
+    <style>
+        #container {
+            width: 95%;
+            max-width: 500px;
+            margin: 20px auto 40px;
+        }
+    </style>
+</head>
+<body>
+<div id="container">
+    <?php
+
+    print_r(findStudentById($estudiantes,2));
+    echo "<br>";
+    print_r(findCourseById($courses,101));
+    echo "<br>";
+    getStudentGrado($grados,1);
+    echo "<br>";
+   echo  statusFromGrado($estudiantes,$grados,3);
+
+
+    ?>
+
+
+</div>
+</body>
+</html>
